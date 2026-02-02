@@ -5,6 +5,8 @@ import plotly.graph_objects as go
 import numpy as np
 from datetime import datetime
 import io
+import os
+from pathlib import Path
 
 # Configuración de la página
 st.set_page_config(page_title="Dashboard Finanzas - Enero 2026", layout="wide", initial_sidebar_state="expanded")
@@ -12,26 +14,90 @@ st.set_page_config(page_title="Dashboard Finanzas - Enero 2026", layout="wide", 
 # Título principal
 st.title("💰 Dashboard de Finanzas - Enero 2026")
 
+# Función para encontrar el archivo Excel
+def encontrar_archivo_excel():
+    """Busca el archivo Excel en múltiples ubicaciones"""
+    nombres_posibles = [
+        "CIERRE GASTOS ADMINISTRATIVOS ENERO 2026.xlsx",
+        "./CIERRE GASTOS ADMINISTRATIVOS ENERO 2026.xlsx",
+    ]
+    
+    # Buscar en el directorio actual
+    for nombre in nombres_posibles:
+        if os.path.exists(nombre):
+            return nombre
+    
+    # Buscar en el directorio del script
+    script_dir = Path(__file__).parent
+    for nombre in nombres_posibles:
+        ruta = script_dir / nombre.strip("./")
+        if ruta.exists():
+            return str(ruta)
+    
+    # Buscar en directorios padres
+    for padre in [script_dir.parent, script_dir.parent.parent]:
+        for nombre in nombres_posibles:
+            ruta = padre / nombre.strip("./")
+            if ruta.exists():
+                return str(ruta)
+    
+    return None
+
 # Cargar datos
 @st.cache_data
 def cargar_datos():
-    excel_file = "CIERRE GASTOS ADMINISTRATIVOS ENERO 2026.xlsx"
+    archivo = encontrar_archivo_excel()
     
-    # Leer la hoja
-    df = pd.read_excel(excel_file, sheet_name="Hoja1")
+    if archivo is None:
+        return None, "No se encontró el archivo 'CIERRE GASTOS ADMINISTRATIVOS ENERO 2026.xlsx'"
     
-    # Excluir filas que no tengan ASESOR (son filas de totales)
-    df = df.dropna(subset=['ASESOR'])
-    
-    # Convertir columnas de fechas a strings para evitar problemas de serialización
-    for col in df.columns:
-        if pd.api.types.is_datetime64_any_dtype(df[col]):
-            df[col] = df[col].dt.strftime('%Y-%m-%d')
-    
-    return df
+    try:
+        # Leer la hoja
+        df = pd.read_excel(archivo, sheet_name="Hoja1")
+        
+        # Excluir filas que no tengan ASESOR (son filas de totales)
+        df = df.dropna(subset=['ASESOR'])
+        
+        # Convertir columnas de fechas a strings para evitar problemas de serialización
+        for col in df.columns:
+            if pd.api.types.is_datetime64_any_dtype(df[col]):
+                df[col] = df[col].dt.strftime('%Y-%m-%d')
+        
+        return df, None
+    except Exception as e:
+        return None, f"Error al leer el archivo: {str(e)}"
+
+# Cargar datos
+resultado_carga = cargar_datos()
+if isinstance(resultado_carga, tuple):
+    df, error_msg = resultado_carga
+else:
+    df = resultado_carga
+    error_msg = None
 
 try:
-    df = cargar_datos()
+    if df is None or error_msg is not None:
+        st.error(f"⚠️ {error_msg or 'Error desconocido al cargar los datos'}")
+        
+        # Opción para subir archivo en Streamlit Cloud
+        st.info("📤 Si estás usando Streamlit Cloud, sube el archivo Excel aquí:")
+        uploaded_file = st.file_uploader("Elige el archivo Excel", type="xlsx")
+        
+        if uploaded_file is not None:
+            try:
+                df = pd.read_excel(uploaded_file, sheet_name="Hoja1")
+                df = df.dropna(subset=['ASESOR'])
+                
+                for col in df.columns:
+                    if pd.api.types.is_datetime64_any_dtype(df[col]):
+                        df[col] = df[col].dt.strftime('%Y-%m-%d')
+                
+                st.success("✅ Archivo cargado correctamente")
+            except Exception as e:
+                st.error(f"Error al procesar el archivo: {str(e)}")
+                st.stop()
+        else:
+            st.stop()
     
     # ============ ANÁLISIS PRINCIPAL: VALOR VENTA, IGV, MONTO ============
     st.markdown("---")
@@ -373,4 +439,5 @@ try:
 
 except Exception as e:
     st.error(f"Error al cargar los datos: {e}")
-    st.info("Asegúrate de que el archivo 'CIERRE GASTOS ADMINISTRATIVOS ENERO 2026.xlsx' esté en el mismo directorio que este script.")
+    st.info("📤 Si estás usando Streamlit Cloud, carga el archivo Excel usando el uploader anterior.")
+
