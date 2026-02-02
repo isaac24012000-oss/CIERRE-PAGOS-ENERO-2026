@@ -21,6 +21,10 @@ def cargar_datos():
     script_dir = Path(__file__).parent
     excel_file = script_dir / "CIERRE GASTOS ADMINISTRATIVOS ENERO 2026.xlsx"
     
+    # Verificar si el archivo existe
+    if not excel_file.exists():
+        raise FileNotFoundError(f"No se encontró el archivo: {excel_file}")
+    
     # Leer la hoja
     df = pd.read_excel(str(excel_file), sheet_name="Hoja1")
     
