@@ -1,0 +1,29 @@
+# Archivos locales y temporales
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Datos locales (no compartir)
+*.xlsx
+*.xls
+CIERRE*.xlsx
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Streamlit
+.streamlit/secrets.toml
+.streamlit/cache/
+
+# Entorno
+.env
+.env.local
