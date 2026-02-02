@@ -21,17 +21,8 @@ def cargar_datos():
     script_dir = Path(__file__).parent
     excel_file = script_dir / "CIERRE GASTOS ADMINISTRATIVOS ENERO 2026.xlsx"
     
-    # Si no existe en el directorio del script, buscar en rutas alternativas
-    if not excel_file.exists():
-        # Intenta en el directorio padre
-        excel_file = script_dir.parent / "CIERRE GASTOS ADMINISTRATIVOS ENERO 2026.xlsx"
-    
-    if not excel_file.exists():
-        # Usa ruta absoluta como último recurso
-        excel_file = r"C:\Users\USUARIO\Desktop\PAGOS ENERO 2026\CIERRE-PAGOS-ENERO-2026\CIERRE-PAGOS-ENERO-2026\CIERRE GASTOS ADMINISTRATIVOS ENERO 2026.xlsx"
-    
     # Leer la hoja
-    df = pd.read_excel(excel_file, sheet_name="Hoja1")
+    df = pd.read_excel(str(excel_file), sheet_name="Hoja1")
     
     # Excluir filas que no tengan ASESOR (son filas de totales)
     df = df.dropna(subset=['ASESOR'])
