@@ -8,9 +8,13 @@ __pycache__/
 *.so
 
 # Datos locales (no compartir)
-*.xlsx
-*.xls
-CIERRE*.xlsx
+# *.xlsx  <- Comentado para permitir que se suban a GitHub los archivos principales
+# *.xls   <- Comentado
+# CIERRE*.xlsx  <- Comentado
+
+# Permitir archivos específicos necesarios
+!CIERRE GASTOS ADMINISTRATIVOS ENERO 2026.xlsx
+!PAGOS ENERO 2026.xlsx
 
 # IDE
 .vscode/
