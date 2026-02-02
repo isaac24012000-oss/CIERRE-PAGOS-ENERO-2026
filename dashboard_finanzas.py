@@ -5,6 +5,8 @@ import plotly.graph_objects as go
 import numpy as np
 from datetime import datetime
 import io
+import os
+from pathlib import Path
 
 # Configuración de la página
 st.set_page_config(page_title="Dashboard Finanzas - Enero 2026", layout="wide", initial_sidebar_state="expanded")
@@ -15,7 +17,18 @@ st.title("💰 Dashboard de Finanzas - Enero 2026")
 # Cargar datos
 @st.cache_data
 def cargar_datos():
-    excel_file = "CIERRE GASTOS ADMINISTRATIVOS ENERO 2026.xlsx"
+    # Obtener la ruta del archivo Excel
+    script_dir = Path(__file__).parent
+    excel_file = script_dir / "CIERRE GASTOS ADMINISTRATIVOS ENERO 2026.xlsx"
+    
+    # Si no existe en el directorio del script, buscar en rutas alternativas
+    if not excel_file.exists():
+        # Intenta en el directorio padre
+        excel_file = script_dir.parent / "CIERRE GASTOS ADMINISTRATIVOS ENERO 2026.xlsx"
+    
+    if not excel_file.exists():
+        # Usa ruta absoluta como último recurso
+        excel_file = r"C:\Users\USUARIO\Desktop\PAGOS ENERO 2026\CIERRE-PAGOS-ENERO-2026\CIERRE-PAGOS-ENERO-2026\CIERRE GASTOS ADMINISTRATIVOS ENERO 2026.xlsx"
     
     # Leer la hoja
     df = pd.read_excel(excel_file, sheet_name="Hoja1")
