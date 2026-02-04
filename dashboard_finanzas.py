@@ -227,7 +227,8 @@ try:
         'Semana 2 (5 - 11 Ene)': (pd.Timestamp('2026-01-05'), pd.Timestamp('2026-01-11')),
         'Semana 3 (12 - 18 Ene)': (pd.Timestamp('2026-01-12'), pd.Timestamp('2026-01-18')),
         'Semana 4 (19 - 25 Ene)': (pd.Timestamp('2026-01-19'), pd.Timestamp('2026-01-25')),
-        'Semana 5 (26 - 31 Ene)': (pd.Timestamp('2026-01-26'), pd.Timestamp('2026-01-31'))
+        'Semana 5 (26 - 31 Ene)': (pd.Timestamp('2026-01-26'), pd.Timestamp('2026-01-31')),
+        'Semana 6 (2 - 7 Feb)': (pd.Timestamp('2026-02-02'), pd.Timestamp('2026-02-07'))
     }
     
     # Calcular montos por semana
